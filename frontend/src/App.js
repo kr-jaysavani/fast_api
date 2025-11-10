@@ -9,7 +9,6 @@ const api = axios.create({
 function App() {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
-    id: "",
     name: "",
     description: "",
     price: "",
@@ -128,7 +127,7 @@ function App() {
 
   // Reset form
   const resetForm = () => {
-    setForm({ id: "", name: "", description: "", price: "", quantity: "" });
+    setForm({ name: "", description: "", price: "", quantity: "" });
     setEditId(null);
   };
 
@@ -150,7 +149,9 @@ function App() {
       } else {
         await api.post("/products/", {
           ...form,
-          id: Number(form.id),
+          id: Number(
+            products.length ? products[products.length - 1].id + 1 : 1
+          ),
           price: Number(form.price),
           quantity: Number(form.quantity),
         });
@@ -159,6 +160,7 @@ function App() {
       resetForm();
       fetchProducts();
     } catch (err) {
+      console.log(err);
       setError(err.response?.data?.detail || "Operation failed");
     }
     setLoading(false);
@@ -233,7 +235,7 @@ function App() {
           <div className="card form-card">
             <h2>{editId ? "Edit Product" : "Add Product"}</h2>
             <form onSubmit={handleSubmit} className="product-form">
-              <input
+              {/* <input
                 type="number"
                 name="id"
                 placeholder="ID"
@@ -241,7 +243,7 @@ function App() {
                 onChange={handleChange}
                 required
                 disabled={!!editId}
-              />
+              /> */}
               <input
                 type="text"
                 name="name"
@@ -346,9 +348,9 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProducts.map((p) => (
+                    {filteredProducts.map((p,index) => (
                       <tr key={p.id}>
-                        <td>{p.id}</td>
+                        <td>{index+1}</td>
                         <td className="name-cell">{p.name}</td>
                         <td className="desc-cell" title={p.description}>
                           {p.description}
